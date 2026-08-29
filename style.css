@@ -1,95 +1,89 @@
-// Chuyển màn hình mượt mà
-function switchScreen(fromId, toId) {
-  const fromScreen = document.getElementById(fromId);
-  const toScreen = document.getElementById(toId);
-  if (fromScreen) fromScreen.classList.remove('active');
-  setTimeout(() => {
-    if (toScreen) toScreen.classList.add('active');
-  }, 300);
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+body, html { width: 100%; height: 100%; overflow: hidden; background-color: #05050a; font-family: 'Poppins', sans-serif; color: #fff; }
+
+.screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease, visibility 0.8s ease; opacity: 0; visibility: hidden; z-index: 1; }
+
+.screen.active { opacity: 1; visibility: visible; z-index: 10; }
+
+/* MÀN 1: BẮT ĐẦU */
+#start-screen { background: radial-gradient(circle, #1a0a1a 0%, #05050a 100%); cursor: pointer; text-align: center; }
+.start-content { z-index: 2; text-align: center; }
+.start-content h2 { margin-bottom: 25px; font-size: 1.8rem; }
+.pulse-btn { padding: 16px 36px; font-size: 1.1rem; background: linear-gradient(45deg, #ff416c, #ff4b2b); border: none; border-radius: 50px; color: white; font-weight: 600; cursor: pointer; box-shadow: 0 0 25px rgba(255, 65, 108, 0.6); animation: pulse 1.8s infinite; }
+
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 65, 108, 0.6); } 50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(255, 65, 108, 0.9); } 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 65, 108, 0.6); } }
+
+#matrix-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* BẦU TRỜI SAO */
+.stars-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #ffb6c1, rgba(0,0,0,0)), radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 160px 120px, #ff69b4, rgba(0,0,0,0)); background-repeat: repeat; background-size: 200px 200px; opacity: 0.6; animation: twinkle 4s infinite alternate ease-in-out; }
+
+@keyframes twinkle { 0% { opacity: 0.3; transform: scale(0.98); } 100% { opacity: 0.8; transform: scale(1.02); } }
+
+/* MÀN 3: PHONG BÌ */
+.envelope-box { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); padding: 30px 40px; border-radius: 20px; border: 1px solid rgba(255, 105, 180, 0.3); text-align: center; cursor: pointer; box-shadow: 0 10px 40px rgba(255, 105, 180, 0.2); transition: transform 0.3s; }
+.envelope-box:hover { transform: translateY(-5px) scale(1.03); }
+.envelope-box h3 { font-size: 1.4rem; color: #ff69b4; margin-bottom: 6px; }
+.envelope-box p { color: #ccc; font-size: 0.9rem; }
+.envelope-icon { font-size: 5rem; display: block; margin-bottom: 15px; animation: bounce 2s infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* MÀN 4: ALBUM */
+.swiper { width: 90%; max-width: 420px; height: 480px; }
+.swiper-slide { background: rgba(255, 255, 255, 0.95); border-radius: 18px; display: flex; flex-direction: column; align-items: center; padding: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); color: #333; }
+.swiper-slide .img-container { width: 100%; height: 75%; border-radius: 12px; overflow: hidden; position: relative; }
+.swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+.swiper-slide .card-msg { margin-top: 15px; font-family: 'Caveat', cursive; font-size: 1.6rem; text-align: center; color: #ff2d55; line-height: 1.3; }
+.center-slide { justify-content: center; text-align: center; }
+.center-slide h2 { color: #ff2d55; font-family: 'Caveat', cursive; font-size: 2.2rem; margin-bottom: 10px; }
+.center-slide p { font-size: 0.95rem; color: #666; margin-bottom: 20px; }
+.action-btn { margin-top: 10px; padding: 10px 24px; background: #ff2d55; color: white; border: none; border-radius: 20px; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 45, 85, 0.4); }
+
+/* MÀN 5: TRÁI TIM */
+#heart-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+#heart-stage { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; z-index: 5; pointer-events: none; }
+
+/* KHUNG TEXT TRUNG TÂM - CÓ NỀN KÍNH MỜ BẢO VỆ CHỮ */
+.heart-center-text-long {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 92%; max-width: 750px;
+  background: rgba(15, 0, 20, 0.5); /* Nền kính mờ tinh tế */
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 105, 180, 0.3);
+  text-align: center; font-family: 'Poppins', sans-serif; font-size: 1.25rem;
+  line-height: 1.8; color: #fff; z-index: 2; pointer-events: none; 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 105, 180, 0.15);
+  animation: float-text 4s infinite alternate ease-in-out;
 }
 
-// Màn 1 -> Màn 2: Bật nhạc & Bắt đầu
-function startExperience() {
-  const music = document.getElementById('bg-music');
-  if (music) {
-    music.currentTime = 0;
-    music.play().then(() => {
-      console.log("Phát nhạc thành công!");
-    }).catch(e => {
-      console.warn("Trình duyệt chặn phát âm thanh:", e);
-    });
-  }
+@keyframes float-text { 0% { transform: translate(-50%, -50%) translateY(0); } 100% { transform: translate(-50%, -50%) translateY(-8px); } }
 
-  switchScreen('start-screen', 'matrix-screen');
-  startMatrixCountdown();
+.highlight-name { font-family: 'Caveat', cursive; font-size: 2.8rem; color: #ff69b4; font-weight: bold; text-shadow: 0 0 25px rgba(255, 105, 180, 1); display: inline-block; margin-top: 5px; }
+
+/* 21 ẢNH TRÁI TIM - KÍCH THƯỚC GẤP ĐÔI (120px) */
+.heart-img {
+  position: absolute; width: 120px; height: 120px; border-radius: 18px; border: 3px solid #ff69b4;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.85); object-fit: cover; top: 50%; left: 50%; z-index: 10;
+  display: block; opacity: 0; cursor: pointer; pointer-events: auto;
+  transform: translate(-50%, -50%) scale(0.1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease, opacity 1.2s ease;
 }
 
-// Màn 2: Matrix Rain
-function startMatrixCountdown() {
-  const canvas = document.getElementById('matrix-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+.heart-img:hover { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.4) !important; z-index: 999 !important; border: 4px solid #fff !important; box-shadow: 0 0 40px #ff1493, 0 15px 40px rgba(0, 0, 0, 0.9) !important; }
 
-  const letters = "01010101HAPPYBIRTHDAYBON♥18";
-  const fontSize = 16;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = Array(columns).fill(1);
+/* CỬA SỔ POPUP TOÀN MÀN HÌNH */
+#photo-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+#photo-modal.open { opacity: 1; visibility: visible; }
+.modal-content-wrapper { position: relative; max-width: 90vw; max-height: 80vh; display: flex; align-items: center; justify-content: center; transform: scale(0.6); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+#photo-modal.open .modal-content-wrapper { transform: scale(1); }
+#modal-img { max-width: 85vw; max-height: 75vh; border-radius: 20px; border: 3px solid #ff69b4; box-shadow: 0 0 40px rgba(255, 105, 180, 0.9), 0 20px 60px rgba(0, 0, 0, 0.95); object-fit: contain; }
+.close-modal-btn { position: absolute; top: -18px; right: -18px; width: 45px; height: 45px; background: #ff1493; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; line-height: 1; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(255, 20, 147, 0.9); transition: transform 0.2s; z-index: 10; }
+.close-modal-btn:hover { transform: scale(1.15); }
 
-  let currentText = "3";
-  const sequence = [ "3", "2", "1", "HAPPY", "BIRTHDAY", "BON", "TUỔI 18", "LẦN THỨ 5", "❤️" ];
-  let seqIndex = 0;
-
-  const seqTimer = setInterval(() => {
-    seqIndex++;
-    if (seqIndex < sequence.length) {
-      currentText = sequence[seqIndex];
-    } else {
-      clearInterval(seqTimer);
-      clearInterval(renderTimer);
-      switchScreen('matrix-screen', 'letter-screen');
-    }
-  }, 1000);
-
-  function draw() {
-    ctx.fillStyle = "rgba(5, 5, 10, 0.15)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#ff69b4";
-    ctx.font = fontSize + "px monospace";
-    
-    for (let i = 0; i < drops.length; i++) {
-      const char = letters[Math.floor(Math.random() * letters.length)];
-      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-      drops[i]++;
-    }
-
-    ctx.save();
-    ctx.fillStyle = "#ff1493";
-    ctx.shadowColor = "#ff69b4";
-    ctx.shadowBlur = 20;
-    ctx.font = "bold 55px 'Poppins', sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(currentText, canvas.width / 2, canvas.height / 2);
-    ctx.restore();
-  }
-  const renderTimer = setInterval(draw, 33);
+/* ĐIỀU CHỈNH TRÊN ĐIỆN THOẠI */
+@media (max-width: 600px) {
+  .heart-img { width: 80px; height: 80px; border-radius: 12px; }
+  .heart-center-text-long { width: 95%; padding: 20px; font-size: 0.88rem; line-height: 1.6; }
+  .highlight-name { font-size: 1.7rem; }
 }
-
-// Màn 3 -> Màn 4: Mở album ảnh 3D
-let swiperInstance = null;
-function goToAlbum() {
-  switchScreen('letter-screen', 'album-screen');
-  if (!swiperInstance) {
-    swiperInstance = new Swiper('.swiper', {
-      effect: 'cards',
-      grabCursor: true,
-      cardsEffect: { slideShadows: true, rotate: true, perSlideRotate: 4, perSlideOffset: 8 }
-    });
-  }
-}
-
-// Màn 4 -> Màn 5: XẾP 21 ẢNH THÀNH TRÁI TIM LỚN GẤP 1.5 LẦN & CHỐNG LỖI
