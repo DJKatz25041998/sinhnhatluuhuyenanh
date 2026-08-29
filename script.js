@@ -8,11 +8,6 @@ const heartPhotos = Array.from({ length: 21 }, (_, i) => {
   return `anh${num}.${ext}`;
 });
 
-const CONFIG = {
-  name: "LƯU HUYỀN ANH",
-  heartPhotos: heartPhotos
-};
-
 // Chuyển màn hình mượt mà
 function switchScreen(fromId, toId) {
   const fromScreen = document.getElementById(fromId);
@@ -125,18 +120,19 @@ function goToAlbum() {
   }
 }
 
-// Màn 4 -> Màn 5: Xếp 21 ảnh khổ lớn thành hình Trái Tim rộng
+// Màn 4 -> Màn 5: Xếp 21 ảnh khổ lớn thành vòng Trái Tim rộng
 function goToHeart() {
   switchScreen('album-screen', 'heart-screen');
   const stage = document.getElementById('heart-stage');
   stage.innerHTML = '';
 
-  const photos = CONFIG.heartPhotos;
+  const photos = heartPhotos;
   const total = photos.length;
   
-  // Tăng bán kính trái tim: Điện thoại là 12, Máy tính là 23 (để vừa khung ảnh to gấp đôi)
+  // TOÁN HỌC BÁN KÍNH TRÁI TIM: 
+  // Tăng scaleR lên 26 (trước đó là 14) để vòng trái tim bành rộng ra bằng 1/2 màn hình PC
   const isMobile = window.innerWidth < 600;
-  const scaleR = isMobile ? 12 : 23;
+  const scaleR = isMobile ? 13 : 26;
 
   photos.forEach((src, i) => {
     const img = document.createElement('img');
@@ -151,11 +147,11 @@ function goToHeart() {
     const posX = `${x * scaleR}px`;
     const posY = `${y * scaleR}px`;
 
-    // Lưu tọa độ vào CSS variables
+    // Lưu tọa độ vào CSS variables (giúp hiệu ứng hover phóng to luôn mượt)
     img.style.setProperty('--tx', posX);
     img.style.setProperty('--ty', posY);
 
-    // CLICK ĐỂ PHÓNG TO TOÀN MÀN HÌNH
+    // CLICK CHUỘT VÀO ẢNH -> BẬT TOÀN MÀN HÌNH CHÍNH GIỮA
     img.onclick = function(e) {
       e.stopPropagation();
       openModal(src);
@@ -163,7 +159,7 @@ function goToHeart() {
 
     stage.appendChild(img);
 
-    // Kích hoạt hiệu ứng bung ảnh ra ngoài
+    // Kích hoạt hiệu ứng bay ảnh bung ra ngoài
     setTimeout(() => {
       img.style.opacity = '1';
       img.style.transform = `translate(calc(-50% + ${posX}), calc(-50% + ${posY})) scale(1)`;
