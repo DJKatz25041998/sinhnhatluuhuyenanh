@@ -1,34 +1,25 @@
-/* ================= CẤU HÌNH DỮ LIỆU ================= */
+/* ================= CẤU HÌNH DANH SÁCH 21 ẢNH ================= */
+// Các ảnh đuôi .jpg: anh5, anh6, anh7, anh19. Còn lại toàn bộ là .jpeg
+const jpgList = [5, 6, 7, 19];
+
+const heartPhotos = Array.from({ length: 21 }, (_, i) => {
+  const num = i + 1;
+  const ext = jpgList.includes(num) ? 'jpg' : 'jpeg';
+  return `anh${num}.${ext}`;
+});
+
 const CONFIG = {
   name: "BON",
-  totalPhotos: 21
+  heartPhotos: heartPhotos
 };
 
-// Khởi tạo tên hiển thị
+// Cập nhật tên hiển thị
 const personNameEl = document.getElementById('person-name');
 if (personNameEl) {
   personNameEl.innerText = CONFIG.name;
 }
 
-// Hàm tải ảnh trực tiếp: Tự động đổi đuôi .jpeg <-> .jpg để không bao giờ bị lỗi
-function setupImageFallback(img, index) {
-  const extensions = ['jpeg', 'jpg', 'JPEG', 'JPG', 'png', 'PNG'];
-  let currentExtIndex = 0;
-
-  img.onerror = function() {
-    currentExtIndex++;
-    if (currentExtIndex < extensions.length) {
-      this.src = `anh${index}.${extensions[currentExtIndex]}`;
-    } else {
-      console.warn(`Không tìm thấy file ảnh: anh${index}`);
-    }
-  };
-
-  // Thử đuôi mặc định đầu tiên
-  img.src = `anh${index}.${extensions[0]}`;
-}
-
-// Chuyển màn hình
+// Chuyển màn hình mượt mà
 function switchScreen(fromId, toId) {
   const fromScreen = document.getElementById(fromId);
   const toScreen = document.getElementById(toId);
@@ -50,12 +41,6 @@ function startExperience() {
     });
   }
 
-  // Tự động gán link chống lỗi cho ảnh trong Album Swiper
-  const albumImgs = document.querySelectorAll('.swiper-slide .img-container img');
-  albumImgs.forEach((img, idx) => {
-    setupImageFallback(img, idx + 1);
-  });
-
   switchScreen('start-screen', 'matrix-screen');
   startMatrixCountdown();
 }
@@ -74,7 +59,15 @@ function startMatrixCountdown() {
 
   let currentText = "3";
   const sequence = [
-    "3", "2", "1", "HAPPY", "BIRTHDAY", CONFIG.name, "TUỔI 18", "LẦN THỨ 5", "❤️"
+    "3",
+    "2",
+    "1",
+    "HAPPY",
+    "BIRTHDAY",
+    CONFIG.name,
+    "TUỔI 18",
+    "LẦN THỨ 5",
+    "❤️"
   ];
   let seqIndex = 0;
 
@@ -93,7 +86,7 @@ function startMatrixCountdown() {
     ctx.fillStyle = "rgba(5, 5, 10, 0.15)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Ký tự màu hồng rơi
+    // Ký tự màu hồng rơi xuống
     ctx.fillStyle = "#ff69b4";
     ctx.font = fontSize + "px monospace";
     for (let i = 0; i < drops.length; i++) {
@@ -105,7 +98,7 @@ function startMatrixCountdown() {
       drops[i]++;
     }
 
-    // Chữ đếm ngược ở giữa màn hình
+    // Chữ đổi ở giữa màn hình
     ctx.save();
     ctx.fillStyle = "#ff1493";
     ctx.shadowColor = "#ff69b4";
@@ -138,31 +131,65 @@ function goToAlbum() {
   }
 }
 
-// Màn 4 -> Màn 5: Xếp 21 ảnh thành Trái Tim
+// Màn 4 -> Màn 5: Xếp 21 ảnh thành hình Trái Tim
 function goToHeart() {
   switchScreen('album-screen', 'heart-screen');
   const stage = document.getElementById('heart-stage');
   stage.innerHTML = '';
 
-  const total = CONFIG.totalPhotos;
+  const photos = CONFIG.heartPhotos;
+  const total = photos.length;
+  
+  // Điều chỉnh tỷ lệ kích thước: điện thoại là 8.5, máy tính là 14
   const isMobile = window.innerWidth < 600;
-  const scaleR = isMobile ? 9 : 15;
+  const scaleR = isMobile ? 8.5 : 14;
 
-  for (let i = 0; i < total; i++) {
-    const num = i + 1;
+  photos.forEach((src, i) => {
     const img = document.createElement('img');
     img.className = 'heart-img';
-    setupImageFallback(img, num);
-    stage.appendChild(img);
-
-    // Tọa độ hình trái tim
+    img.src = src;
+    
+    // Phương trình đường cong trái tim Parametric
     const t = (Math.PI * 2 * i) / total;
     const x = 16 * Math.pow(Math.sin(t), 3);
     const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
+    const posX = `${x * scaleR}px`;
+    const posY = `${y * scaleR}px`;
+
+    // Lưu tọa độ vào CSS variables để khi hover phóng to không bị nhảy lệch vị trí
+    img.style.setProperty('--tx', posX);
+    img.style.setProperty('--ty', posY);
+
+    // SỰ KIỆN NHẤP CHUỘT: Mở Modal phóng to ảnh toàn màn hình
+    img.onclick = function(e) {
+      e.stopPropagation();
+      openModal(src);
+    };
+
+    stage.appendChild(img);
+
+    // Kích hoạt hiệu ứng bung ảnh ra ngoài
     setTimeout(() => {
       img.style.opacity = '1';
-      img.style.transform = `translate(calc(-50% + ${x * scaleR}px), calc(-50% + ${y * scaleR}px)) scale(1)`;
-    }, 100 + i * 70);
+      img.style.transform = `translate(calc(-50% + ${posX}), calc(-50% + ${posY})) scale(1)`;
+    }, 150 + i * 65);
+  });
+}
+
+/* ================= XỬ LÝ POPUP PHÓNG TO ẢNH (MODAL) ================= */
+function openModal(imageSrc) {
+  const modal = document.getElementById('photo-modal');
+  const modalImg = document.getElementById('modal-img');
+  if (modal && modalImg) {
+    modalImg.src = imageSrc;
+    modal.classList.add('open');
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('photo-modal');
+  if (modal) {
+    modal.classList.remove('open');
   }
 }
