@@ -1,4 +1,17 @@
-// Chuyển màn hình mượt mà
+/* ================= CẤU HÌNH TÊN ẢNH TUYỆT ĐỐI CHÍNH XÁC ================= */
+// Định danh rõ ràng theo đúng yêu cầu của bạn, tuyệt đối không tự quét đuôi gây đơ web
+const heartPhotos = [];
+const jpgList = [5, 6, 7, 19];
+
+for (let i = 1; i <= 21; i++) {
+  if (jpgList.includes(i)) {
+    heartPhotos.push(`anh${i}.jpg`);
+  } else {
+    heartPhotos.push(`anh${i}.jpeg`);
+  }
+}
+
+// Hàm chuyển màn hình mượt mà
 function switchScreen(fromId, toId) {
   const fromScreen = document.getElementById(fromId);
   const toScreen = document.getElementById(toId);
@@ -13,11 +26,7 @@ function startExperience() {
   const music = document.getElementById('bg-music');
   if (music) {
     music.currentTime = 0;
-    music.play().then(() => {
-      console.log("Phát nhạc thành công!");
-    }).catch(e => {
-      console.warn("Trình duyệt chặn phát âm thanh:", e);
-    });
+    music.play().catch(e => console.warn("Trình duyệt chặn phát âm thanh:", e));
   }
 
   switchScreen('start-screen', 'matrix-screen');
@@ -92,7 +101,7 @@ function goToAlbum() {
   }
 }
 
-// Màn 4 -> Màn 5: XẾP 21 ẢNH THÀNH TRÁI TIM LỚN GẤP 1.5 LẦN & CHỐNG LỖI ẢNH 100%
+// Màn 4 -> Màn 5: XẾP 21 ẢNH THÀNH TRÁI TIM SIÊU KHỔNG LỒ
 function goToHeart() {
   switchScreen('album-screen', 'heart-screen');
   const stage = document.getElementById('heart-stage');
@@ -100,40 +109,16 @@ function goToHeart() {
 
   const total = 21;
   
-  // TĂNG BÁN KÍNH TRÁI TIM LÊN GẤP RƯỠI ĐỂ TRÁNH ĐÈ LÊN CHỮ:
-  // Mobile = 18, Máy tính = 38 (Quỹ đạo bay rất rộng)
+  // Mở rộng bán kính bay siêu xa (chiếm hơn nửa màn hình)
   const isMobile = window.innerWidth < 600;
-  const scaleR = isMobile ? 18 : 38;
+  const scaleR = isMobile ? 18 : 42;
 
   for (let i = 0; i < total; i++) {
-    let num = i + 1;
     const img = document.createElement('img');
     img.className = 'heart-img';
-
-    // ----------------------------------------------------
-    // CƠ CHẾ TỰ ĐỘNG SỬA LỖI ẢNH (AUTO FALLBACK EXTENSION)
-    // ----------------------------------------------------
-    const extensions = ['jpeg', 'jpg', 'JPEG', 'JPG', 'png', 'PNG'];
-    let extIdx = 0;
     
-    // Nạp link dự phòng để dùng khi click mở to
-    img.dataset.src = `anh${num}.${extensions[extIdx]}`;
-
-    img.onerror = function() {
-      extIdx++;
-      if (extIdx < extensions.length) {
-        // Nếu ảnh báo lỗi, lập tức thử đuôi khác (.jpg, .png...)
-        this.src = `anh${num}.${extensions[extIdx]}`;
-        this.dataset.src = `anh${num}.${extensions[extIdx]}`;
-      } else {
-        console.warn(`Lỗi không tìm thấy file cho: anh${num}`);
-        this.onerror = null; // NGĂN CHẶN LỖI ĐƠ TRÌNH DUYỆT TẠI ĐÂY
-      }
-    };
-    
-    // Thử đuôi mặc định đầu tiên
-    img.src = `anh${num}.${extensions[0]}`;
-    // ----------------------------------------------------
+    // Nạp link tĩnh, không gây vòng lặp mạng
+    img.src = heartPhotos[i];
 
     // Tọa độ quỹ đạo hình trái tim
     const t = (Math.PI * 2 * i) / total;
@@ -149,7 +134,7 @@ function goToHeart() {
     // BẬT TOÀN MÀN HÌNH CHÍNH GIỮA KHI CLICK VÀO ẢNH
     img.onclick = function(e) {
       e.stopPropagation();
-      openModal(this.dataset.src); // Mở chính xác cái ảnh vừa load thành công
+      openModal(this.src); 
     };
 
     stage.appendChild(img);
