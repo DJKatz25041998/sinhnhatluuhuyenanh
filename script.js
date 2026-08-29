@@ -9,15 +9,9 @@ const heartPhotos = Array.from({ length: 21 }, (_, i) => {
 });
 
 const CONFIG = {
-  name: "BON",
+  name: "LƯU HUYỀN ANH",
   heartPhotos: heartPhotos
 };
-
-// Cập nhật tên hiển thị
-const personNameEl = document.getElementById('person-name');
-if (personNameEl) {
-  personNameEl.innerText = CONFIG.name;
-}
 
 // Chuyển màn hình mượt mà
 function switchScreen(fromId, toId) {
@@ -64,7 +58,7 @@ function startMatrixCountdown() {
     "1",
     "HAPPY",
     "BIRTHDAY",
-    CONFIG.name,
+    "BON",
     "TUỔI 18",
     "LẦN THỨ 5",
     "❤️"
@@ -131,7 +125,7 @@ function goToAlbum() {
   }
 }
 
-// Màn 4 -> Màn 5: Xếp 21 ảnh thành hình Trái Tim
+// Màn 4 -> Màn 5: Xếp 21 ảnh khổ lớn thành hình Trái Tim rộng
 function goToHeart() {
   switchScreen('album-screen', 'heart-screen');
   const stage = document.getElementById('heart-stage');
@@ -140,9 +134,9 @@ function goToHeart() {
   const photos = CONFIG.heartPhotos;
   const total = photos.length;
   
-  // Điều chỉnh tỷ lệ kích thước: điện thoại là 8.5, máy tính là 14
+  // Tăng bán kính trái tim: Điện thoại là 12, Máy tính là 23 (để vừa khung ảnh to gấp đôi)
   const isMobile = window.innerWidth < 600;
-  const scaleR = isMobile ? 8.5 : 14;
+  const scaleR = isMobile ? 12 : 23;
 
   photos.forEach((src, i) => {
     const img = document.createElement('img');
@@ -157,11 +151,11 @@ function goToHeart() {
     const posX = `${x * scaleR}px`;
     const posY = `${y * scaleR}px`;
 
-    // Lưu tọa độ vào CSS variables để khi hover phóng to không bị nhảy lệch vị trí
+    // Lưu tọa độ vào CSS variables
     img.style.setProperty('--tx', posX);
     img.style.setProperty('--ty', posY);
 
-    // SỰ KIỆN NHẤP CHUỘT: Mở Modal phóng to ảnh toàn màn hình
+    // CLICK ĐỂ PHÓNG TO TOÀN MÀN HÌNH
     img.onclick = function(e) {
       e.stopPropagation();
       openModal(src);
