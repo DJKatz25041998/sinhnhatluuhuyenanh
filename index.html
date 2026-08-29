@@ -74,14 +74,17 @@
     </div>
   </div>
 
-  <div class="screen" id="heart-screen">
+ <div class="screen" id="heart-screen">
     <div class="stars-bg"></div>
-    <div class="heart-center-text" id="heart-title">Love You Always ❤️<br><span id="person-name">BON</span></div>
+    <div class="heart-center-text">Love You Always ❤️<br><span id="person-name">BON</span></div>
     
     <div id="heart-stage"></div>
 
-    <div id="hover-popup">
-      <img id="hover-popup-img" src="" alt="Preview Photo">
+    <div id="photo-modal" onclick="closeModal()">
+      <div class="modal-content-wrapper" onclick="event.stopPropagation()">
+        <img id="modal-img" src="" alt="Zoomed Photo">
+        <span class="close-modal-btn" onclick="closeModal()">×</span>
+      </div>
     </div>
   </div>
 
